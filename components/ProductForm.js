@@ -1,13 +1,16 @@
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
+import Spinner from '@/components/Spinner';
+import { ReactSortable } from 'react-sortablejs';
 
-
-export default function ProductForm({ _id, title: existingTitle, description: existingDescription, price: existingPrice, images, }) {
+export default function ProductForm({ _id, title: existingTitle, description: existingDescription, price: existingPrice, images: existingImages, }) {
     const [title, setTitle] = useState(existingTitle || '');
     const [description, setDescription] = useState(existingDescription || '');
     const [price, setPrice] = useState(existingPrice || 0);
+    const [images, setImages] = useState(existingImages || []);
     const [goToProducts, setGoToProducts] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -24,7 +27,7 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
 
     async function saveProduct(ev) {
         ev.preventDefault();
-        const data = { title, description, price }
+        const data = { title, description, price, images }
 
         if (_id) {
             await axios.put('/api/products', { ...data, _id });
@@ -45,18 +48,30 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
     async function uploadImages(ev) {
         const files = ev.target?.files;
         if (files?.length > 0) {
+            setIsUploading(true);
             const data = new FormData();
             for (const file of files) {
                 data.append('file', file);
             }
-            console.log(data);
-            const res = await axios.post('/api/upload', data, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                }
-            });
-            console.log(res.data);
+            const res = await axios.post('/api/upload', data)
+            setImages(oldImages => {
+                return [...oldImages, ...res.data.links]
+            })
+            setIsUploading(false);
         }
+    }
+
+    function deleteImage(index) {
+        setImages(oldImages => {
+            const newImages = [...oldImages];
+            newImages.splice(index, 1);
+            return newImages;
+        });
+    }
+
+
+    function uploadImagesOrder(images) {
+        setImages(images)
     }
     return (
 
@@ -73,20 +88,39 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
                 <lable>
                     Photos
                 </lable>
-                <div className='mb-2 place-content-center justify-content align-items-center '>
-                    <label className='button-x w-24 h-24 border cursor-pointer border-gray-500 bg-gray-300 text-center flex flex-col items-center rounded-lg text-gray-700'>
-                        <br></br>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <div className='flex flex-wrap gap-1'>
+                    <ReactSortable list={images} setList={uploadImagesOrder} className='flex flex-wrap gap-1'>
+                        {!!images?.length && images.map((link, index) => (
+                            <div key={link} className='h-24 w-24 flex relative'>
+                                <img src={link} alt='' className='w-full h-full object-cover rounded-lg' />
+                                <div class="absolute inset-0 flex justify-center items-center opacity-0 hover:opacity-100">
+                                    <button onClick={() => deleteImage(index)} class="bg-white rounded-full text-gray-500 hover:bg-gray-100 gap-1 opacity-70 px-1 py-1 absolute top-0 right-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-2 w-2" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M3.81 3.553a1 1 0 011.32-.083l.094.083L10 8.586l4.793-4.793a1 1 0 011.497 1.32l-.083.094L11.414 10l4.793 4.793a1 1 0 01-1.32 1.497l-.094-.083L10 11.414l-4.793 4.793a1 1 0 01-1.497-1.32l.083-.094L8.586 10 3.793 5.207a1 1 0 01-.083-1.32l.083-.094z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                            </div>
+                        ))}
+                    </ReactSortable>
+                    {isUploading && (
+                        <div className='h-24 w-24 flex justify-center items-center'>
+                            <Spinner />
+                        </div>
+                    )}
+                </div>
+
+                <div className='mb-2 flex flex-row'>
+                    <label className='cursor-pointer drop-shadow-lg shadow-blue-500/50 bg-gray-300 rounded-lg text-gray-700 flex m-2 px-5 py-1'>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-2">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15" />
                         </svg>
                         Upload
                         <input type="file" multiple className="hidden" onChange={uploadImages} />
                     </label>
-
-
-
                 </div>
-                {!images?.length && (<div>No images uploaded</div>)}
+
                 <label>Description</label>
                 <textarea placeholder='Description'
                     value={description}
