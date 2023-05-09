@@ -1,7 +1,7 @@
 import Nav from "@/components/Nav";
 import CNav from "./CollapsibleSideBar";
 import { useSession, signIn, signOut } from "next-auth/react"
-
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 export default function Layout({ children }) {
     const { data: session } = useSession()
@@ -17,8 +17,23 @@ export default function Layout({ children }) {
     return (
         <div className=" min-h-screen flex ">
             <CNav />
-            <div className="bg-slate-800 w-[120%] p-4 ">
-                {children}
+            
+            <div className=" w-[120%] p-4 ">
+                
+            {children}
+                <ul class="background">
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                </ul>
+                
             </div>
         </div>
 

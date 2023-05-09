@@ -77,26 +77,43 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
     function uploadImagesOrder(images) {
         setImages(images)
     }
+    const propertiesToFill = [];
+    if (categories.length > 0 && category) {
+        let catInfo = categories.find(({ _id }) => _id === category);
+        propertiesToFill.push(...catInfo.properties);
+        while (catInfo?.parent?._id) {
+            const parentCat = categories.find(({ _id }) => _id === catInfo?.parent?._id);
+            propertiesToFill.push(...parentCat.properties);
+            catInfo = parentCat;
+        }
+    }
+
+
     return (
 
         <form onSubmit={saveProduct}>
 
-            <div className="flex flex-col place-items-center">
-
-                <label>Product Name</label>
-                <input type='text'
-                    placeholder="Product name"
-                    value={title}
-                    onChange={ev => setTitle(ev.target.value)}>
-                </input>
-                <label>Category</label>
-                <select value={category} onChange={ev => setCategory(ev.target.value)}>
-                    <option value=''>No Category</option>
-                    {categories.length > 0 && categories.map(c => (
-                        <option value={c._id}>{c.name}</option>
+            <div className="flex flex-col place-items-center w-full">
+                <div className='w-1/2 flex flex-col place-items-center'>
+                    <label className='text-graytext'>Product Name</label>
+                    <input type='text'
+                        className="mb-1 dark-text-input"
+                        placeholder="Product name"
+                        value={title}
+                        onChange={ev => setTitle(ev.target.value)}>
+                    </input>
+                    <label className='text-graytext'>Category</label>
+                    <select className="dark-select" value={category} onChange={ev => setCategory(ev.target.value)}>
+                        <option value=''>No Category</option>
+                        {categories.length > 0 && categories.map(c => (
+                            <option value={c._id}>{c.name}</option>
+                        ))}
+                    </select>
+                    {propertiesToFill.length > 0 && propertiesToFill.map(p => (
+                        <div className='text-white p-2'>{p.name}</div>
                     ))}
-                </select>
-                <label>
+                </div>
+                <label className='text-graytext'>
                     Photos
                 </label>
                 <div className='flex flex-wrap gap-1'>
@@ -122,31 +139,36 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
                     )}
                 </div>
 
-                <div className='mb-2 flex flex-row'>
-                    <label className='cursor-pointer drop-shadow-lg shadow-blue-500/50 bg-gray-300 rounded-lg text-gray-700 flex m-2 px-5 py-1'>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15" />
-                        </svg>
-                        Upload
+                <div className='w-1/2 flex flex-col place-items-center'>
+
+                    <label className="mt-2 cursor-pointer relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800">
+                        <span className="relative px-4 py-1 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+
+                            Upload
+                        </span>
                         <input type="file" multiple className="hidden" onChange={uploadImages} />
                     </label>
                 </div>
+                <div className='w-1/2 flex flex-col place-items-center'>
+                    <label className='text-graytext'>Description</label>
+                    <textarea placeholder='Description'
+                        className="dark-text-input"
+                        value={description}
+                        onChange={ev => setDescription(ev.target.value)}>
 
-                <label>Description</label>
-                <textarea placeholder='Description'
-                    value={description}
-                    onChange={ev => setDescription(ev.target.value)}>
-
-                </textarea>
-                <label>Price (AUD)</label>
-                <input type="number"
-                    placeholder='Price'
-                    value={price}
-                    onChange={ev => setPrice(ev.target.value)}>
-                </input>
-                <button type="submit"
-                    className="btn-primary w-900">
-                    Save
+                    </textarea>
+                    <label className='text-graytext'>Price (AUD)</label>
+                    <input type="number"
+                        className="mb-2 dark-text-input"
+                        placeholder='Price'
+                        value={price}
+                        onChange={ev => setPrice(ev.target.value)}>
+                    </input>
+                </div>
+                <button type='submit' className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800">
+                    <span className="relative px-4 py-1 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                        Save
+                    </span>
                 </button>
             </div>
         </form>
