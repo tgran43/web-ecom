@@ -7,14 +7,21 @@ img {
   max-height: 100%
 }
 
+html * {
+  font-family: 'Monaco', monospace;
+
+}
+
 input,
-textarea {
+textarea,
+select {
   @apply border border-gray-400 rounded-md shadow-sm px-1 w-1/2;
   @apply mb-2;
 }
 
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
   @apply border-gray-900;
 }
 
@@ -26,12 +33,16 @@ label {
   @apply text-black;
 }
 
+div {
+  /* @apply border border-rose-700 */
+}
+
 .btn-primary {
-  @apply bg-blue-500 text-white rounded-md px-4 py-1;
+  @apply bg-blue-500 text-white rounded-md px-4 py-1 shadow-sm shadow-gray-500;
 }
 
 table.basic {
-  @apply w-full;
+  @apply w-1/2 table-fixed;
 }
 
 table.basic thead tr td {
@@ -58,3 +69,33 @@ table.basic a {
 .btn-default {
   @apply rounded-md px-4 py-1;
 }
+
+
+.dark-select {
+  @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
+}
+
+.dark-text-input{
+  @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
+}
+
+.dark-table{
+  @apply  w-full text-sm text-left text-gray-500 dark:text-gray-700
+}
+
+.dark-table thead{
+  @apply text-xs text-gray-700 uppercase dark:text-gray-400
+}
+
+.dark-table tr{
+  @apply px-6 py-3
+}
+
+.dark-table tr{
+  @apply bg-white border-b dark:bg-gray-900 dark:border-gray-700
+}
+
+.dark-table tr,td{
+  @apply px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white
+}
+

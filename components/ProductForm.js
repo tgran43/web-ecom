@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Spinner from '@/components/Spinner';
 import { ReactSortable } from 'react-sortablejs';
 
-export default function ProductForm({ _id, title: existingTitle, description: existingDescription, price: existingPrice, images: existingImages, }) {
+export default function ProductForm({ _id, title: existingTitle, description: existingDescription, price: existingPrice, images: existingImages, category: existingCategory }) {
     const [title, setTitle] = useState(existingTitle || '');
     const [description, setDescription] = useState(existingDescription || '');
     const [price, setPrice] = useState(existingPrice || 0);
@@ -12,7 +12,8 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
     const [goToProducts, setGoToProducts] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const router = useRouter();
-
+    const [categories, setCategories] = useState([]);
+    const [category, setCategory] = useState(existingCategory || '');
     useEffect(() => {
         if (existingTitle) {
             setTitle(existingTitle);
@@ -23,11 +24,17 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
         if (existingPrice) {
             setPrice(existingPrice);
         }
+        if (existingCategory) {
+            setCategory(existingCategory);
+        }
+        axios.get('/api/categories').then(result => {
+            setCategories(result.data);
+        })
     }, [existingTitle, existingDescription, existingPrice]);
 
     async function saveProduct(ev) {
         ev.preventDefault();
-        const data = { title, description, price, images }
+        const data = { title, description, price, images, category }
 
         if (_id) {
             await axios.put('/api/products', { ...data, _id });
@@ -36,9 +43,6 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
             axios.post('/api/products', data)
         }
         setGoToProducts(true);
-
-
-
 
     };
     if (goToProducts) {
@@ -77,7 +81,7 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
 
         <form onSubmit={saveProduct}>
 
-            <div className="flex flex-col place-items-center border-4 border-gradient bg-clip-border">
+            <div className="flex flex-col place-items-center">
 
                 <label>Product Name</label>
                 <input type='text'
@@ -85,18 +89,25 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
                     value={title}
                     onChange={ev => setTitle(ev.target.value)}>
                 </input>
-                <lable>
+                <label>Category</label>
+                <select value={category} onChange={ev => setCategory(ev.target.value)}>
+                    <option value=''>No Category</option>
+                    {categories.length > 0 && categories.map(c => (
+                        <option value={c._id}>{c.name}</option>
+                    ))}
+                </select>
+                <label>
                     Photos
-                </lable>
+                </label>
                 <div className='flex flex-wrap gap-1'>
                     <ReactSortable list={images} setList={uploadImagesOrder} className='flex flex-wrap gap-1'>
                         {!!images?.length && images.map((link, index) => (
                             <div key={link} className='h-24 w-24 flex relative'>
                                 <img src={link} alt='' className='w-full h-full object-cover rounded-lg' />
-                                <div class="absolute inset-0 flex justify-center items-center opacity-0 hover:opacity-100">
-                                    <button onClick={() => deleteImage(index)} class="bg-white rounded-full text-gray-500 hover:bg-gray-100 gap-1 opacity-70 px-1 py-1 absolute top-0 right-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-2 w-2" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M3.81 3.553a1 1 0 011.32-.083l.094.083L10 8.586l4.793-4.793a1 1 0 011.497 1.32l-.083.094L11.414 10l4.793 4.793a1 1 0 01-1.32 1.497l-.094-.083L10 11.414l-4.793 4.793a1 1 0 01-1.497-1.32l.083-.094L8.586 10 3.793 5.207a1 1 0 01-.083-1.32l.083-.094z" clip-rule="evenodd" />
+                                <div className="absolute inset-0 flex justify-center items-center opacity-0 hover:opacity-100">
+                                    <button onClick={() => deleteImage(index)} className="bg-white rounded-full text-gray-500 hover:bg-gray-100 gap-1 opacity-70 px-1 py-1 absolute top-0 right-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M3.81 3.553a1 1 0 011.32-.083l.094.083L10 8.586l4.793-4.793a1 1 0 011.497 1.32l-.083.094L11.414 10l4.793 4.793a1 1 0 01-1.32 1.497l-.094-.083L10 11.414l-4.793 4.793a1 1 0 01-1.497-1.32l.083-.094L8.586 10 3.793 5.207a1 1 0 01-.083-1.32l.083-.094z" clipRule="evenodd" />
                                         </svg>
                                     </button>
                                 </div>

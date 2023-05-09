@@ -1,4 +1,5 @@
 import Nav from "@/components/Nav";
+import CNav from "./CollapsibleSideBar";
 import { useSession, signIn, signOut } from "next-auth/react"
 
 
@@ -6,7 +7,7 @@ export default function Layout({ children }) {
     const { data: session } = useSession()
     if (!session) {
         return (
-            <div className="bg-gray-900 w-screen h-screen flex items-center">
+            <div className="bg-gradient-to-bl from-gray-900 via-slate-900 to-slate-800 w-screen h-screen flex items-center">
                 <div className="text-center w-full">
                     <button onClick={() => signIn('google')} className="bg-white p-2 px-4 rounded-md text-black">Login with Google</button>
                 </div>
@@ -14,9 +15,9 @@ export default function Layout({ children }) {
         )
     }
     return (
-        <div className="bg-gray-900 min-h-screen flex">
-            <Nav />
-            <div className="bg-white flex-grow mt-2 mr-2 rounded-lg p-4 mb-2">
+        <div className=" min-h-screen flex ">
+            <CNav />
+            <div className="bg-slate-800 w-[120%] p-4 ">
                 {children}
             </div>
         </div>
