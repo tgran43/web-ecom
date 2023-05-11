@@ -111,25 +111,25 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
         <form onSubmit={saveProduct}>
 
             <div className="flex flex-col place-items-center w-full">
-                <div className='w-1/2 flex flex-col place-items-center'>
+                <div className='w-screen flex flex-col place-items-center'>
                     <label className='text-graytext'>Product Name</label>
                     <input type='text'
-                        className="mb-1 dark-text-input"
+                        className="mb-1 dark-text-input md:w-1/2"
                         placeholder="Product name"
                         value={title}
                         onChange={ev => setTitle(ev.target.value)}>
                     </input>
                     <label className='text-graytext'>Category</label>
-                    <select className="dark-select" value={category} onChange={ev => setCategory(ev.target.value)}>
+                    <select className="dark-select md:w-1/2" value={category} onChange={ev => setCategory(ev.target.value)}>
                         <option value=''>No Category</option>
                         {categories.length > 0 && categories.map(c => (
                             <option value={c._id}>{c.name}</option>
                         ))}
                     </select>
                     {propertiesToFill.length > 0 && propertiesToFill.map(p => (
-                        <div className='text-white p-2 w-1/2'>
+                        <div className='text-white w-screen flex flex-col place-items-center'>
                             <div>{p.name}</div>
-                            <select value={productProperties[p.name]} type='text' className='dark-select' onChange={ev => { setProductProp(p.name, ev.target.value) }}>
+                            <select value={productProperties[p.name]} type='text' className='dark-select md:w-1/2' onChange={ev => { setProductProp(p.name, ev.target.value) }}>
                                 <option value=''></option>
                                 {p.values.map(v => (
                                     <option value={v}>{v}</option>
@@ -141,7 +141,7 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
                 <label className='text-graytext'>
                     Photos
                 </label>
-                <div className='flex flex-wrap gap-1'>
+                <div className='flex flex-wap m-auto gap-1'>
                     <ReactSortable list={images} setList={uploadImagesOrder} className='flex flex-wrap gap-1'>
                         {!!images?.length && images.map((link, index) => (
                             <div key={link} className='h-24 w-24 flex relative'>

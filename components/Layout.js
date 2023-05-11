@@ -1,7 +1,6 @@
-import Nav from "@/components/Nav";
+
 import CNav from "./CollapsibleSideBar";
 import { useSession, signIn, signOut } from "next-auth/react"
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { useState } from "react";
 import Logo from "./Logo";
 
