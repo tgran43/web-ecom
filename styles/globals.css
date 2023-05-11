@@ -80,7 +80,7 @@ table.basic a {
 }
 
 .dark-table {
-  @apply w-full text-sm text-left text-gray-500 dark:text-gray-700
+  @apply w-screen text-sm text-left text-gray-500 dark:text-gray-700
 }
 
 .dark-table thead {

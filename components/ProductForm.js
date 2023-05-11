@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Spinner from '@/components/Spinner';
 import { ReactSortable } from 'react-sortablejs';
 
-export default function ProductForm({ _id, title: existingTitle, description: existingDescription, price: existingPrice, images: existingImages, category: existingCategory }) {
+export default function ProductForm({ _id, title: existingTitle, description: existingDescription, price: existingPrice,
+    images: existingImages, category: existingCategory, properties: existingProperties }) {
     const [title, setTitle] = useState(existingTitle || '');
     const [description, setDescription] = useState(existingDescription || '');
     const [price, setPrice] = useState(existingPrice || 0);
@@ -12,6 +13,7 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
     const [goToProducts, setGoToProducts] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const router = useRouter();
+    const [productProperties, setProductProperties] = useState(existingProperties || {});
     const [categories, setCategories] = useState([]);
     const [category, setCategory] = useState(existingCategory || '');
     useEffect(() => {
@@ -34,7 +36,7 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
 
     async function saveProduct(ev) {
         ev.preventDefault();
-        const data = { title, description, price, images, category }
+        const data = { title, description, price, images, category, properties: productProperties }
 
         if (_id) {
             await axios.put('/api/products', { ...data, _id });
@@ -88,6 +90,21 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
         }
     }
 
+    function setProductProp(name, value) {
+        console.log(name, value);
+        if (value !== '') {
+            setProductProperties(oldProps => {
+                return { ...oldProps, [name]: value }
+            })
+        }
+        else {
+            setProductProperties(oldProps => {
+                const newProps = { ...oldProps };
+                delete newProps[name];
+                return newProps;
+            })
+        }
+    }
 
     return (
 
@@ -110,7 +127,15 @@ export default function ProductForm({ _id, title: existingTitle, description: ex
                         ))}
                     </select>
                     {propertiesToFill.length > 0 && propertiesToFill.map(p => (
-                        <div className='text-white p-2'>{p.name}</div>
+                        <div className='text-white p-2 w-1/2'>
+                            <div>{p.name}</div>
+                            <select value={productProperties[p.name]} type='text' className='dark-select' onChange={ev => { setProductProp(p.name, ev.target.value) }}>
+                                <option value=''></option>
+                                {p.values.map(v => (
+                                    <option value={v}>{v}</option>
+                                ))}
+                            </select>
+                        </div>
                     ))}
                 </div>
                 <label className='text-graytext'>
